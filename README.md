@@ -1,2 +1,2 @@
-# qsb-typei
-Queue in Slack Bot
+# QSB Type-I
+Queue in Slack Bot.
