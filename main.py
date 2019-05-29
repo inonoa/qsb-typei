@@ -1,14 +1,38 @@
 import queue as qu
-import os
 from slackclient import SlackClient
+import time
+import sys
 
 q = qu.Queue()
-q.put("Q: これは誰？")
 
 boku = SlackClient(input())
 
-boku.api_call("chat.postMessage",channel="#memonoa",text=q.get(),icon_emoji=":polaris:",username="誰")
+q.put("2")
+q.put("1")
+q.put("0")
 
+
+while True:
+    if boku.rtm_connect():
+        try:
+            while True:
+                for rtm in boku.rtm_read():
+                    if rtm.get("type") and rtm["type"] == "message" and\
+                        rtm.get("channel") and rtm["channel"] == "C641SPSKC" and\
+                            rtm.get("text") and rtm["text"] == "きゅー":
+                        if not q.empty():
+                            boku.api_call("chat.postMessage",channel="#memonoa",text=q.get()+"を出します")
+                        else:
+                            boku.api_call("chat.postMessage",channel="#memonoa",text="空ですよ")
+                time.sleep(3)
+        except KeyboardInterrupt:
+            boku.api_call("chat.postMessage",channel="#memonoa",text="強制終了：予期せぬエラーが発生しました")
+            sys.exit()
+        except Exception as e:
+            boku.api_call("chat.postMessage",channel="#memonoa",text="強制終了：予期せぬエラーが発生しました")
+            sys.exit()
+
+    time.sleep(5)
 
 
 # import os
