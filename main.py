@@ -4,12 +4,9 @@ import time
 import sys
 
 q = qu.Queue()
+hajimete = True
 
 boku = SlackClient(input())
-
-q.put("2")
-q.put("1")
-q.put("0")
 
 # 発言
 def say(s):
@@ -19,6 +16,12 @@ def say(s):
 while True:
     # 繋がるならいい感じにやる、つながらなければ5秒待つ
     if boku.rtm_connect():
+
+        # 挨拶
+        if(hajimete):
+            say("QSBを起動します。")
+            hajimete = False
+
         # 任意の例外で同じようなメッセージだして止まるのよろしくないな…
         try:
             # 再犯
@@ -53,6 +56,7 @@ while True:
         except Exception as e:
             say("強制終了：予期せぬエラーが発生しました")
             sys.exit()
+
     # 繋がらなければ5秒待つ
     time.sleep(5)
 
