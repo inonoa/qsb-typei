@@ -18,12 +18,16 @@ while True:
             while True:
                 for rtm in boku.rtm_read():
                     if rtm.get("type") and rtm["type"] == "message" and\
-                        rtm.get("channel") and rtm["channel"] == "C641SPSKC" and\
-                            rtm.get("text") and rtm["text"] == "きゅー":
-                        if not q.empty():
-                            boku.api_call("chat.postMessage",channel="#memonoa",text=q.get()+"を出します")
-                        else:
-                            boku.api_call("chat.postMessage",channel="#memonoa",text="空ですよ")
+                        rtm.get("channel") and rtm["channel"] == "C641SPSKC":
+                        if rtm.get("text") and rtm["text"][-7:] == "きゅーから出す":
+                            if not q.empty():
+                                boku.api_call("chat.postMessage",channel="#memonoa",text=q.get()+"を出します")
+                            else:
+                                boku.api_call("chat.postMessage",channel="#memonoa",text="空ですよ")
+                        elif rtm.get("text") and rtm["text"][:4] == "きゅーに" and rtm["text"][-4:] == "を入れる":
+                            ireru = rtm["text"][4:-4]
+                            boku.api_call("chat.postMessage",channel="#memonoa",text=ireru+"を入れます")
+                            q.put(ireru)
                 time.sleep(3)
         except KeyboardInterrupt:
             boku.api_call("chat.postMessage",channel="#memonoa",text="強制終了：予期せぬエラーが発生しました")
