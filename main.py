@@ -11,6 +11,10 @@ q.put("2")
 q.put("1")
 q.put("0")
 
+# 発言
+def say(s):
+    boku.api_call("chat.postMessage",channel="#memonoa",text=s,icon_emoji=":atcoder_ac:",username="QSB")
+
 # 逮捕
 while True:
     # 繋がるならいい感じにやる、つながらなければ5秒待つ
@@ -29,14 +33,14 @@ while True:
                         # Dequeue(Queueから一つ取り出す)
                         if rtm["text"][:3] == "deq":
                             if not q.empty():
-                                boku.api_call("chat.postMessage",channel="#memonoa",text=q.get()+"を出します")
+                                say(q.get()+"を出します")
                             else:
-                                boku.api_call("chat.postMessage",channel="#memonoa",text="空ですよ")
+                                say("空ですよ")
 
                         # Enqueue(Queueに一つ入れる)
                         elif rtm["text"][:4] == "enq ":
                             ireru = rtm["text"][4:]
-                            boku.api_call("chat.postMessage",channel="#memonoa",text=ireru+"を入れます")
+                            say(ireru+"を入れます")
                             q.put(ireru)
 
                 # イベント取得間隔は三秒(以上)            
@@ -44,10 +48,10 @@ while True:
 
         # 任意の例外で強制終了のメッセージだして(出せない時もあるだろうけど)終了
         except KeyboardInterrupt:
-            boku.api_call("chat.postMessage",channel="#memonoa",text="強制終了：予期せぬエラーが発生しました")
+            say("強制終了：予期せぬエラーが発生しました")
             sys.exit()
         except Exception as e:
-            boku.api_call("chat.postMessage",channel="#memonoa",text="強制終了：予期せぬエラーが発生しました")
+            say("強制終了：予期せぬエラーが発生しました")
             sys.exit()
     # 繋がらなければ5秒待つ
     time.sleep(5)
