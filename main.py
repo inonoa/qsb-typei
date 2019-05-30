@@ -11,31 +11,45 @@ q.put("2")
 q.put("1")
 q.put("0")
 
-
+# 逮捕
 while True:
+    # 繋がるならいい感じにやる、つながらなければ5秒待つ
     if boku.rtm_connect():
+        # 任意の例外で同じようなメッセージだして止まるのよろしくないな…
         try:
+            # 再犯
             while True:
+
+                # イベントを取得して一つ一つ処理
                 for rtm in boku.rtm_read():
+                    # 基本的に発言しかとらないので発言の場合だけ処理
                     if rtm.get("type") and rtm["type"] == "message" and\
-                        rtm.get("channel") and rtm["channel"] == "C641SPSKC":
-                        if rtm.get("text") and rtm["text"][-7:] == "きゅーから出す":
+                        rtm.get("channel") and rtm["channel"] == "C641SPSKC" and rtm.get("text"):
+
+                        # Dequeue(Queueから一つ取り出す)
+                        if rtm["text"][:3] == "deq":
                             if not q.empty():
                                 boku.api_call("chat.postMessage",channel="#memonoa",text=q.get()+"を出します")
                             else:
                                 boku.api_call("chat.postMessage",channel="#memonoa",text="空ですよ")
-                        elif rtm.get("text") and rtm["text"][:4] == "きゅーに" and rtm["text"][-4:] == "を入れる":
-                            ireru = rtm["text"][4:-4]
+
+                        # Enqueue(Queueに一つ入れる)
+                        elif rtm["text"][:4] == "enq ":
+                            ireru = rtm["text"][4:]
                             boku.api_call("chat.postMessage",channel="#memonoa",text=ireru+"を入れます")
                             q.put(ireru)
+
+                # イベント取得間隔は三秒(以上)            
                 time.sleep(3)
+
+        # 任意の例外で強制終了のメッセージだして(出せない時もあるだろうけど)終了
         except KeyboardInterrupt:
             boku.api_call("chat.postMessage",channel="#memonoa",text="強制終了：予期せぬエラーが発生しました")
             sys.exit()
         except Exception as e:
             boku.api_call("chat.postMessage",channel="#memonoa",text="強制終了：予期せぬエラーが発生しました")
             sys.exit()
-
+    # 繋がらなければ5秒待つ
     time.sleep(5)
 
 
