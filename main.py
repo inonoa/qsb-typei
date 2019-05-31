@@ -66,7 +66,7 @@ while True:
                                 say("そんな名前のキューは無いが？反論がないなら私の勝ちだが？")
 
                         # new Queue();(キューを追加)
-                        if rtm["text"][:9] == "create q ":
+                        if rtm["text"][:9] == "create q " and len(rtm["text"])>9:
                             for qwn in qs:
                                 if qwn.name==rtm["text"][9:]:
                                     say("既に同名のキューが存在します。")
@@ -74,6 +74,16 @@ while True:
                             else:
                                 qs.append(QueueWithName(rtm["text"][9:]))
                                 say("キュー "+rtm["text"][9:]+" を追加しました。")
+
+                        # Remove(Queueを削除)
+                        if (rtm["text"][:9] == "remove q " or rtm["text"][:9] == "delete q ") and len(rtm["text"])>9:
+                            for qwn in qs:
+                                if qwn.name==rtm["text"][9:]:
+                                    say("キュー "+rtm["text"][9:]+" を削除します。")
+                                    qs.remove(qwn)
+                                    break
+                            else:
+                                say("そんな名前のキューは無いが？反論がないなら私の勝ちだが？")
 
                 # イベント取得間隔は三秒(以上)
                 time.sleep(3)
