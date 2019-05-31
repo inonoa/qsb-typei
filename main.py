@@ -54,7 +54,7 @@ while True:
                         # peek(Queueの先頭を見る)を実装しようとしたけどそんな関数はなかった？？
 
                         # Enqueue(Queueに一つ入れる)
-                        if rtm["text"][:4] == "enq " and len(rtm["text"])>4:
+                        elif rtm["text"][:4] == "enq " and len(rtm["text"])>4:
                             words = rtm["text"].split()
                             for qwn in qs:
                                 if qwn.name==words[1]:
@@ -66,7 +66,7 @@ while True:
                                 say("そんな名前のキューは無いが？反論がないなら私の勝ちだが？")
 
                         # new Queue();(キューを追加)
-                        if rtm["text"][:9] == "create q " and len(rtm["text"])>9:
+                        elif rtm["text"][:9] == "create q " and len(rtm["text"])>9:
                             for qwn in qs:
                                 if qwn.name==rtm["text"][9:]:
                                     say("既に同名のキューが存在します。")
@@ -76,7 +76,7 @@ while True:
                                 say("キュー "+rtm["text"][9:]+" を追加しました。")
 
                         # Remove(Queueを削除)
-                        if (rtm["text"][:9] == "remove q " or rtm["text"][:9] == "delete q ") and len(rtm["text"])>9:
+                        elif (rtm["text"][:9] == "remove q " or rtm["text"][:9] == "delete q ") and len(rtm["text"])>9:
                             for qwn in qs:
                                 if qwn.name==rtm["text"][9:]:
                                     say("キュー "+rtm["text"][9:]+" を削除します。")
@@ -84,6 +84,17 @@ while True:
                                     break
                             else:
                                 say("そんな名前のキューは無いが？反論がないなら私の勝ちだが？")
+                        
+                        # list(Queueの一覧を見る)
+                        elif rtm["text"][:6] == "q list":
+                            say("キューの一覧を表示します。")
+                            s = ""
+                            if(len(qs))==0:
+                                say(":iie:")
+                            else:
+                                for qwn in qs:
+                                    s += qwn.name + "\n"
+                                say(s)
 
                 # イベント取得間隔は三秒(以上)
                 time.sleep(3)
