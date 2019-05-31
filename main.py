@@ -3,7 +3,12 @@ from slackclient import SlackClient
 import time
 import sys
 
-q = qu.Queue()
+class QueueWithName:
+    def __init__(self, name):
+        self.name = name
+        self.q = qu.Queue()
+
+qs = [QueueWithName("きゅー")]
 hajimete = True
 
 boku = SlackClient(input())
@@ -20,6 +25,7 @@ while True:
         # 挨拶
         if(hajimete):
             say("QSBを起動します。")
+            print(qs)
             hajimete = False
 
         # 任意の例外で同じようなメッセージだして止まるのよろしくないな…
@@ -34,19 +40,42 @@ while True:
                         rtm.get("channel") and rtm["channel"] == "C641SPSKC" and rtm.get("text"):
 
                         # Dequeue(Queueから一つ取り出す)
-                        if rtm["text"][:3] == "deq":
-                            if not q.empty():
-                                say(q.get()+"を出します")
+                        if rtm["text"][:4] == "deq " and len(rtm["text"])>4:
+                            for qwn in qs:
+                                if qwn.name==rtm["text"][4:]:
+                                    if qwn.q.empty():
+                                        say("キューが空です。")
+                                    else:
+                                        say(qwn.q.get()+"を出しました。")
+                                    break
                             else:
-                                say("空ですよ")
+                                say("そんな名前のキューは無いが？反論がないなら私の勝ちだが？")
+                        
+                        # peek(Queueの先頭を見る)を実装しようとしたけどそんな関数はなかった？？
 
                         # Enqueue(Queueに一つ入れる)
-                        elif rtm["text"][:4] == "enq ":
-                            ireru = rtm["text"][4:]
-                            say(ireru+"を入れます")
-                            q.put(ireru)
+                        if rtm["text"][:4] == "enq " and len(rtm["text"])>4:
+                            words = rtm["text"].split()
+                            for qwn in qs:
+                                if qwn.name==words[1]:
+                                    for w in words[2:]:
+                                        say(w+"を入れます。")
+                                        qwn.q.put(w)
+                                    break
+                            else:
+                                say("そんな名前のキューは無いが？反論がないなら私の勝ちだが？")
 
-                # イベント取得間隔は三秒(以上)            
+                        # new Queue();(キューを追加)
+                        if rtm["text"][:9] == "create q ":
+                            for qwn in qs:
+                                if qwn.name==rtm["text"][9:]:
+                                    say("既に同名のキューが存在します。")
+                                    break
+                            else:
+                                qs.append(QueueWithName(rtm["text"][9:]))
+                                say("キュー "+rtm["text"][9:]+" を追加しました。")
+
+                # イベント取得間隔は三秒(以上)
                 time.sleep(3)
 
         # 任意の例外で強制終了のメッセージだして(出せない時もあるだろうけど)終了
@@ -54,6 +83,7 @@ while True:
             say("強制終了：予期せぬエラーが発生しました")
             sys.exit()
         except Exception as e:
+            print(e)
             say("強制終了：予期せぬエラーが発生しました")
             sys.exit()
 
