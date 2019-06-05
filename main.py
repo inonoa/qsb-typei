@@ -107,8 +107,7 @@ while True:
             sys.exit()
         except Exception as e:
             print(e)
-            say("強制終了：予期せぬエラーが発生しました")
-            sys.exit()
+            say("エラーが発生しました。 `nohup.out` をご確認ください。")
 
     # 繋がらなければ5秒待つ
     time.sleep(5)
